@@ -1,0 +1,104 @@
+Error in Parsing
+
+Number of Pins  =  11 
+
+Node_iterator =  1  parent_iterator =  1  child1 =  2  child2 =  3
+(None, None, 'Horizontal_Partition')
+Sanity check
+Length of List 1: 
+6 
+Length of List 2 :
+5
+Type of Partitioning -> 	Horizontal_Partition
+Mean and Median are
+(34023, 60513) 
+(33416, 62525)
+Parent and child :  1 -> 2 ,  3 (2, 3) 1 1
+Node_iterator =  3  parent_iterator =  2  child1 =  4  child2 =  5
+((34023, 60513), (33416, 62525), 'Vertical_Partition')
+Sanity check
+Length of List 1: 
+4 
+Length of List 2 :
+2
+Type of Partitioning -> 	Vertical_Partition
+Mean and Median are
+(30832, 57014) 
+(33298, 61877)
+Parent and child :  2 -> 4 ,  5 (4, 5) 2 2
+Node_iterator =  5  parent_iterator =  3  child1 =  6  child2 =  7
+((34023, 60513), (33416, 62525), 'Vertical_Partition')
+Sanity check
+Length of List 1: 
+3 
+Length of List 2 :
+2
+Type of Partitioning -> 	Vertical_Partition
+Mean and Median are
+(37853, 64711) 
+(36852, 64281)
+Parent and child :  3 -> 6 ,  7 (6, 7) 3 3
+Node_iterator =  7  parent_iterator =  4  child1 =  8  child2 =  9
+((30832, 57014), (33298, 61877), 'Horizontal_Partition')
+Sanity check
+Length of List 1: 
+3 
+Length of List 2 :
+1
+Type of Partitioning -> 	Horizontal_Partition
+Mean and Median are
+(30246, 53076) 
+(32727, 59653)
+Parent and child :  4 -> 8 ,  9 (8, 9) 4 4
+Node_iterator =  9  parent_iterator =  5  child1 =  10  child2 =  11
+((30832, 57014), (33298, 61877), 'Horizontal_Partition')
+Sanity check
+Length of List 1: 
+2 
+Length of List 2 :
+1
+Type of Partitioning -> 	Horizontal_Partition
+Mean and Median are
+(36429, 62347) 
+(36852, 64281)
+Parent and child :  5 -> 10 ,  11 (10, 11) 5 5
+Node_iterator =  11  parent_iterator =  6  child1 =  12  child2 =  13
+((37853, 64711), (36852, 64281), 'Horizontal_Partition')
+Sanity check
+Length of List 1: 
+2 
+Length of List 2 :
+1
+Type of Partitioning -> 	Horizontal_Partition
+Mean and Median are
+(29268, 50359) 
+(29322, 41420)
+Parent and child :  6 -> 12 ,  13 (12, 13) 6 6
+Done
+Finally -> list of parents
+{0: 1, 1: (2, 3), 2: (4, 5), 3: (6, 7), 4: (8, 9), 5: (10, 11), 6: (12, 13)}
+Just check
+2 
+1 
+(30832, 57014) 
+(34023, 60513)
+Just check
+3 
+1 
+(37853, 64711) 
+(34023, 60513)
+Just check
+4 
+2 
+(30246, 53076) 
+(30832, 57014)
+Just check
+5 
+2 
+(36429, 62347) 
+(30832, 57014)
+Just check
+6 
+3 
+(29268, 50359) 
+(37853, 64711)

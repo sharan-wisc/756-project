@@ -1,0 +1,56 @@
+# UCLA IBM clock benchmark 1.0
+# Created       : Wed May 17 10:47:57 PDT 2000
+# User          : tsao@cs.ucla.edu
+# PlatForm      : SunOS 5.7 sparc SUNW,Ultra-1
+# Source        : IBM benchmarks from R.S. Tsay 
+# Note          : Coordinate unit can be micro-meter or anything
+
+NumPins : 267 
+
+PerUnitResistance : 0.003000 
+
+PerUnitCapacitance : 2.000000e-17 
+
+Sink : 0 
+    Coordinate : 29322 41420 
+    Capacitive Load :  5.900000e-14 
+
+Sink : 1 
+    Coordinate : 26208 51579 
+    Capacitive Load :  3.500000e-14 
+
+Sink : 2 
+    Coordinate : 35565 61661 
+    Capacitive Load :  5.300000e-14 
+
+Sink : 3 
+    Coordinate : 36852 64281 
+    Capacitive Load :  3.400000e-14 
+
+Sink : 4 
+    Coordinate : 33416 62525 
+    Capacitive Load :  4.500000e-14 
+
+Sink : 5 
+    Coordinate : 36915 67124 
+    Capacitive Load :  7.000000e-14 
+
+Sink : 6 
+    Coordinate : 32275 58078 
+    Capacitive Load :  7.200000e-14 
+
+Sink : 7 
+    Coordinate : 30591 67258 
+    Capacitive Load :  4.300000e-14 
+
+Sink : 8 
+    Coordinate : 33180 61229 
+    Capacitive Load :  4.500000e-14 
+
+Sink : 9 
+    Coordinate : 43063 69393 
+    Capacitive Load :  4.300000e-14 
+
+Sink : 10 
+    Coordinate : 36871 61100 
+    Capacitive Load :  3.300000e-14 
