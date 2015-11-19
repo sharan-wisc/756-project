@@ -2,11 +2,10 @@ from mean_median import get_mean
 from mean_median import get_median 
 
 def do_partition(xy_coordinate, parent_child_node, child_parent_node, node_mean_median, node_coordinates, node_iterator, parent_iterator, xy_child1, xy_child2):
-	if len(xy_coordinate) > 2 :
+	if len(xy_coordinate) > 1 :
 		parent_iterator = parent_iterator + 1
 		child1 = node_iterator + 1
 		child2 = node_iterator + 2
-		print "Node_iterator = ", node_iterator, " parent_iterator = ", parent_iterator, " child1 = ", child1, " child2 = ", child2
 		parent_child_node[parent_iterator] = (child1, child2)
 		child_parent_node[child1] = parent_iterator
 		child_parent_node[child2] = parent_iterator
@@ -36,17 +35,23 @@ def do_partition(xy_coordinate, parent_child_node, child_parent_node, node_mean_
 
 		node_coordinates[child1] = xy_child1
 		node_coordinates[child2] = xy_child2
-		print "Sanity check\nLength of List 1: \n", len(xy_child1), "\nLength of List 2 :\n", len(xy_child2) 
-		print "Type of Partitioning -> \t", node_mean_median[parent_of_parent][2]
-		print "Mean and Median are\n", mean, "\n", median
-#		print "Child1\n", xy_child1
-#		print "Child2\n", xy_child2
-		print "Parent and child : ", parent_iterator, "->", child1, ", ", child2, parent_child_node[parent_iterator], child_parent_node[child1], child_parent_node[child2]
+		print "Length of List ", child1, " : ", len(xy_child1),"\n",xy_child1,"\nLength of List ", child2, " : ", len(xy_child2),"\n",xy_child2 
+		print "Mean and Median are\n", mean, "\n", median, "\t for parent = ", parent_iterator
+		print "Parent and child : ",parent_iterator,"->", parent_child_node[parent_iterator]
 	
+	elif len(xy_coordinate) == 1 : 
+		parent_iterator = parent_iterator + 1
+		mean = xy_coordinate[0]
+		node_mean_median[parent_iterator] = (mean, None, None)
+		print "Node with only one coordinate"
+		print "Mean and Median are\n", mean, "\t for parent = ", parent_iterator
+
+
 	return (parent_child_node, child_parent_node, node_mean_median, node_coordinates, node_iterator, parent_iterator) 
 
 def get_wirelength(node_mean_median, child_parent_node):
 	child_parent_wl = {} 
+	print "List of Children -> ", child_parent_node.keys()
 	for child in child_parent_node.keys():
 		parent = child_parent_node[child]                                             
 		if parent == 0: 

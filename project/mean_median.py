@@ -13,8 +13,8 @@ def get_median(xy_coordinate, dimension_partition):
 
 	if no_elements%2 == 0 :
 		mid_value = no_elements/2
-		x_median = (xy_coordinate_sorted[mid_value][0] + xy_coordinate_sorted[mid_value+1][0]) / 2
-		y_median = (xy_coordinate_sorted[mid_value][1] + xy_coordinate_sorted[mid_value+1][1]) / 2
+		x_median = (xy_coordinate_sorted[mid_value][0] + xy_coordinate_sorted[mid_value-1][0]) / 2
+		y_median = (xy_coordinate_sorted[mid_value][1] + xy_coordinate_sorted[mid_value-1][1]) / 2
 	else:
 		mid_value = (no_elements - 1)/2
 		x_median = xy_coordinate_sorted[mid_value][0]

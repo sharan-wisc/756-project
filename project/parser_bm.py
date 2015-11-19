@@ -31,10 +31,10 @@ def parse_file(file_name):
 			mmm_input_dict[sink_number] = (x_coordinate, y_coordinate)
 			mmm_input_list.append((x_coordinate, y_coordinate))
 					
-	num_pins_sanity = len(mmm_input_dict.keys())
+	num_pins_sanity = len(mmm_input_list)
 	if num_pins != num_pins_sanity:
 		print "Error in Parsing"
-	print "\nNumber of Pins  = ", num_pins_sanity, "\n"
+	print "\nNumber of Pins  = ", num_pins_sanity, "\n", mmm_input_list
 
 	file.close()
 	return mmm_input_list 

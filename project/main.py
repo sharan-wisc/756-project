@@ -3,6 +3,11 @@ from parser_bm import parse_file
 from parser_bm import sort_dict
 from mmm_algo import do_partition 
 from mmm_algo import get_wirelength  
+from datetime import datetime
+import time
+
+start_time = datetime.now().strftime("%H:%M:%S.%f")
+start_time_moreprec = ("%.20f" % time.time())
 
 mmm_xy = {}
 mmm_xy_list = []
@@ -31,7 +36,7 @@ else:
 #		xy_coordinates = node_coordinates[child]
 		if iterator < len(node_coordinates.keys()):
 			xy_coordinates = node_coordinates[node_coordinates.keys()[iterator]]
-			if len(xy_coordinates) > 1 :
+			if len(xy_coordinates) >= 1 :
 				(parent_child_node, child_parent_node, node_mean_median, node_coordinates, node_iterator, parent_iterator) = do_partition(xy_coordinates, parent_child_node, child_parent_node, node_mean_median, node_coordinates, node_iterator, parent_iterator, xy_child1, xy_child2) 
 #			for keys in node_coordinates.keys():
 #				print "After completion -> keys = ", keys
@@ -43,4 +48,8 @@ else:
 
 	child_parent_wl = get_wirelength(node_mean_median, child_parent_node)
 	print "List of wirelengths \n", child_parent_wl
-#	(mmm_sorted_x, mmm_sorted_y) = sort_dict(mmm_xy)
+
+end_time = datetime.now().strftime("%H:%M:%S.%f")
+end_time_moreprec = ("%.20f" % time.time())
+print("Execution time = ", end_time, start_time)#end_time-start_time," in microseconds")
+print("Execution time = ", end_time_moreprec, start_time_moreprec, float(end_time_moreprec)-float(start_time_moreprec)," in microseconds")
