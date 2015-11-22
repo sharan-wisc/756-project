@@ -26,10 +26,9 @@ def parse_file(file_name):
 			y_coordinate = int(info_coordinate[3])
 
 			info_load= row[nextline_iterator+1].split()
-			load = info_load[3]
-			
+			load = float(info_load[3])
 			mmm_input_dict[sink_number] = (x_coordinate, y_coordinate)
-			mmm_input_list.append((x_coordinate, y_coordinate))
+			mmm_input_list.append((x_coordinate, y_coordinate, load))
 					
 	num_pins_sanity = len(mmm_input_list)
 	if num_pins != num_pins_sanity:

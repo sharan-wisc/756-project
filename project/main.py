@@ -12,6 +12,7 @@ start_time_moreprec = ("%.20f" % time.time())
 mmm_xy = {}
 mmm_xy_list = []
 parent_child_node = {}
+parent_load = {}
 child_parent_node = {}
 node_mean_median = {}
 node_coordinates = {}
@@ -19,7 +20,9 @@ child_parent_wl = {}
 node_iterator = 1
 parent_iterator = 0
 parent_child_node[0] = 1
+parent_load[0] = None
 child_parent_node[1] = 0
+node_with_sink = []
 node_mean_median[0] = (None, None, "Horizontal_Partition")
 #	node_mean_median[0] = (None, None, "Vertical_Partition")
 
@@ -37,7 +40,7 @@ else:
 		if iterator < len(node_coordinates.keys()):
 			xy_coordinates = node_coordinates[node_coordinates.keys()[iterator]]
 			if len(xy_coordinates) >= 1 :
-				(parent_child_node, child_parent_node, node_mean_median, node_coordinates, node_iterator, parent_iterator) = do_partition(xy_coordinates, parent_child_node, child_parent_node, node_mean_median, node_coordinates, node_iterator, parent_iterator, xy_child1, xy_child2) 
+				(parent_child_node, parent_load, child_parent_node, node_mean_median, node_coordinates, node_iterator, parent_iterator, node_with_sink) = do_partition(xy_coordinates, parent_load,  parent_child_node, child_parent_node, node_mean_median, node_coordinates, node_iterator, parent_iterator, xy_child1, xy_child2, node_with_sink) 
 #			for keys in node_coordinates.keys():
 #				print "After completion -> keys = ", keys
 			iterator = iterator + 1 

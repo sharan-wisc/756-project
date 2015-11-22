@@ -1,7 +1,7 @@
 from mean_median import get_mean
 from mean_median import get_median 
 
-def do_partition(xy_coordinate, parent_child_node, child_parent_node, node_mean_median, node_coordinates, node_iterator, parent_iterator, xy_child1, xy_child2):
+def do_partition(xy_coordinate, parent_load, parent_child_node, child_parent_node, node_mean_median, node_coordinates, node_iterator, parent_iterator, xy_child1, xy_child2, node_with_sink):
 	if len(xy_coordinate) > 1 :
 		parent_iterator = parent_iterator + 1
 		child1 = node_iterator + 1
@@ -13,7 +13,9 @@ def do_partition(xy_coordinate, parent_child_node, child_parent_node, node_mean_
 		
 		mean = get_mean(xy_coordinate)
 		parent_of_parent = child_parent_node[parent_iterator]
+		parent_load[parent_iterator] = sum(load[2] for load in xy_coordinate)  
 		print node_mean_median[parent_of_parent]
+		print "Load at parent : ", parent_iterator, "\n", parent_load[parent_iterator]
 
 		if node_mean_median[parent_of_parent][2] == "Horizontal_Partition" :
 			median = get_median(xy_coordinate, "Vertical_Partition")
@@ -43,11 +45,15 @@ def do_partition(xy_coordinate, parent_child_node, child_parent_node, node_mean_
 		parent_iterator = parent_iterator + 1
 		mean = xy_coordinate[0]
 		node_mean_median[parent_iterator] = (mean, None, None)
+		parent_load[parent_iterator] = sum(load[2] for load in xy_coordinate)  
+		node_with_sink.append(parent_iterator)
 		print "Node with only one coordinate"
+		print "Load at parent : ", parent_iterator, "\n", parent_load[parent_iterator]
 		print "Mean and Median are\n", mean, "\t for parent = ", parent_iterator
+		print "List of nodes with sink \t", node_with_sink
 
 
-	return (parent_child_node, child_parent_node, node_mean_median, node_coordinates, node_iterator, parent_iterator) 
+	return (parent_child_node, parent_load, child_parent_node, node_mean_median, node_coordinates, node_iterator, parent_iterator, node_with_sink) 
 
 def get_wirelength(node_mean_median, child_parent_node):
 	child_parent_wl = {} 
