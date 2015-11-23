@@ -1,6 +1,6 @@
 def parse_file(file_name):
-	file=open(file_name,'r') 
-	row = file.readlines()
+	read_file=open(file_name,'r') 
+	row = read_file.readlines()
 
 	mmm_input_dict = {}
 	mmm_input_sort_x = {}
@@ -11,8 +11,8 @@ def parse_file(file_name):
 	nextline_iterator = 0
 
 	num_pins = int(row[7].split()[2])
-	unit_resistance = row[9].split()[2]
-	unit_capacitance = row[11].split()[2]
+	unit_resistance = float(row[9].split()[2])
+	unit_capacitance = float(row[11].split()[2])
 
 
 	for line in row:
@@ -35,8 +35,8 @@ def parse_file(file_name):
 		print "Error in Parsing"
 	print "\nNumber of Pins  = ", num_pins_sanity, "\n", mmm_input_list
 
-	file.close()
-	return mmm_input_list 
+	read_file.close()
+	return (mmm_input_list, unit_resistance, unit_capacitance) 
 
 def sort_dict(mmm_input_dict):
 #mmm_input_sort_key = sorted(mmm_input_dict.items(), key = lambda tup : tup[0]) #Sorting with respect to key
