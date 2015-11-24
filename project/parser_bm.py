@@ -33,9 +33,9 @@ def parse_file(file_name):
 	num_pins_sanity = len(mmm_input_list)
 	if num_pins != num_pins_sanity:
 		print "Error in Parsing"
-#	print "\nNumber of Pins  = ", num_pins_sanity, "\n", mmm_input_list
 
 	read_file.close()
+	
 	return (mmm_input_list, unit_resistance, unit_capacitance) 
 
 def sort_dict(mmm_input_dict):
