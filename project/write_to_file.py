@@ -22,6 +22,7 @@ def print_left(node, node_print_left, node_print_right, parent_child_node, child
 		node_print_right[node] = None 
 		node = parent_child_node[node][0]
 		(node_print_left, node_print_right) = print_left(node, node_print_left, node_print_right, parent_child_node, child_parent_node, node_with_sink, write_file, child_parent_wl, sink_load, delay_sink)
+
 	else:
 		write_file.write("\t< sink")
 		write_file.write(str(node))
@@ -76,5 +77,5 @@ def print_right(node, node_print_left, node_print_right, parent_child_node, chil
 		node_print_right[parent] = True
 		node = child_parent_node[node]
 		(node_print_left, node_print_right) = print_right(node, node_print_left, node_print_right, parent_child_node, child_parent_node, node_with_sink, write_file, child_parent_wl, sink_load, delay_sink)
-	
+
 	return (node_print_left, node_print_right)
