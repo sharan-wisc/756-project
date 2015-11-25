@@ -42,6 +42,8 @@ if len(sys.argv) < 3 :
 else:
 	input_file_name = sys.argv[1]
 	(mmm_xy_list, unit_resistance, unit_capacitance) = parse_file(input_file_name)
+	unit_resistance = unit_resistance * (10**3)
+	unit_capacitance = unit_capacitance * (10**18)
 	node_coordinates[1] = mmm_xy_list
 	for iterator in range(100000) :
 		xy_child1 = []
