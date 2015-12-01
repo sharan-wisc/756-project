@@ -26,7 +26,7 @@ SUBMIT_FILES    = $(wildcard *.[Cchyl]) Makefile
 #
 # Tools used
 #
-CC		= gcc
+CC		= gcc 
 CXX		= g++
 FLEX		= flex
 BISON		= bison
@@ -44,7 +44,7 @@ CXX_OBJS       := $(CXX_SRCS:.C=.o)
 HDRS	        = $(wildcard *.h)
 
 INCLUDES	=
-LIBS		= -lm
+LIBS		= -lm -lrt
 
 #
 # Choose suitable commandline flags 

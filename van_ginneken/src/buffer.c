@@ -9,6 +9,11 @@
 #include <math.h>
 #include "parser.h"
 #include <time.h>
+#include <stdint.h>
+
+uint64_t diff; 
+struct timespec start, end;     //for calculating the time
+#define BILLION 1000000000L
 
 /* ------------------------------------------------------------------------ */
 /* LOCAL DEFINES                                                            */
@@ -484,6 +489,7 @@ main(int argc, char *argv[])
 {
   Tree t;
 
+clock_gettime(CLOCK_MONOTONIC, &start); //start time //
   if (argc > 1 && argv[1])
     if (!freopen(argv[1], "r", stdin)) {
       fprintf(stderr, "Cannot open file `%s' for reading.\n", argv[1]);
@@ -497,5 +503,10 @@ main(int argc, char *argv[])
   pair_show(stdout, OPAIR(options_last(bottom_up(t, 0))));
   fprintf(stdout, "\n");
 
+clock_gettime(CLOCK_MONOTONIC, &end); // end time //
+diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
+
+printf("elapsed process CPU time = %llu nanoseconds\n", (long long unsigned int) diff);
+printf("elapsed process CPU time = %llu milliseconds\n", (long long unsigned int) (diff/1000000)); 
   return EXIT_SUCCESS;
 }

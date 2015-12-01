@@ -44,7 +44,7 @@ CXX_OBJS       := $(CXX_SRCS:.C=.o)
 HDRS	        = $(wildcard *.h)
 
 INCLUDES	=
-LIBS		= -lm
+LIBS		= -lm -lrt
 
 #
 # Choose suitable commandline flags 
