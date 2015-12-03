@@ -10,9 +10,11 @@
 #include "parser.h"
 #include <time.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 uint64_t diff; 
+static uint64_t time_diff = 0;
+static uint64_t time_merge = 0;
+static int iterate_merge; 
 struct timespec start, end;     //for calculating the time
 #define BILLION 1000000000L
 
@@ -222,6 +224,99 @@ options_sink(Tree k)
 	return Z;
 }
 
+// Partitions the list taking the last element as the pivot
+Options partition(Options head, Options end,
+		Options *newHead, Options *newEnd)
+{
+	Options pivot = end;
+	Options prev = NULL, cur = head, tail = pivot;
+
+	// During partition, both the head and end of the list might change
+	// which is updated in the newHead and newEnd variables
+	while (cur != pivot)
+	{
+	  //if (OTIME(cur) < OTIME(pivot))
+		if (OTIME(cur) < OTIME(pivot))
+		{
+			// First node that has a value less than the pivot - becomes
+			// the new head
+			if ((*newHead) == NULL)
+				(*newHead) = cur;
+
+			prev = cur;  
+			cur = ONEXT(cur);
+		}
+		else // If cur node is greater than pivot
+		{
+			// Move cur node to next of tail, and change tail
+			if (prev)
+				ONEXT(prev) = ONEXT(cur);
+			Options tmp = ONEXT(cur);
+			ONEXT(cur) = NULL;
+			ONEXT(tail) = cur;
+			tail = cur;
+			cur = tmp;
+		}
+	}
+
+	// If the pivot data is the smallest element in the current list,
+	// pivot becomes the head
+	if ((*newHead) == NULL)
+		(*newHead) = pivot;
+
+	// Update newEnd to the current last node
+	(*newEnd) = tail;
+
+	// Return the pivot node
+	return pivot;
+}
+
+
+//here the sorting happens exclusive of the end node
+Options quickSortRecur(Options head)
+{
+	Options end = options_last(head);
+	// base condition
+	if (!head || head == end)
+		return head;
+
+	Options newHead = NULL, newEnd = NULL;
+
+	// Partition the list, newHead and newEnd will be updated
+	// by the partition function
+	Options pivot = partition(head, end, &newHead, &newEnd);
+
+	// If pivot is the smallest element - no need to recur for
+	// the left part.
+	if (newHead != pivot)
+	{
+		// Set the node before the pivot node as NULL
+		Options tmp = newHead;
+		while (ONEXT(tmp) != pivot)
+			tmp = ONEXT(tmp);
+		ONEXT(tmp) = NULL;
+
+		// Recur for the list before pivot
+		newHead = quickSortRecur(newHead);
+
+		// Change next of last node of the left half to pivot
+		tmp = options_last(newHead);
+		ONEXT(tmp) =  pivot;
+	}
+
+	// Recur for the list after the pivot element
+	ONEXT(pivot) = quickSortRecur(ONEXT(pivot));
+
+	return newHead;
+}
+
+// The main function for quick sort. This is a wrapper over recursive
+// function quickSortRecur()
+void quickSort(Options list)
+{
+	list = quickSortRecur(list);
+	return;
+}
 
 /************************************************/
 /* (FILLED BY YOU) */
@@ -235,7 +330,7 @@ static Options options_filter(Options Z, Nat len){
 	prev_o = Z; // To keep track of previous node
 
 	//Iterating over the entire list
-	for (o = Z ; o;){ 
+	for (o = Z; o; o=ONEXT(o)){ 
 
 		//Look for Max RAT
 		if (rat < OTIME(o)){ 
@@ -252,12 +347,12 @@ static Options options_filter(Options Z, Nat len){
 		if(rat > OTIME(o) && load < OLOAD(o)){
 			temp = o;
 			ONEXT(prev_o) = ONEXT(o);
-			o = ONEXT(o);
+//			o = ONEXT(o);
 			free(temp);
 		}
 		else{
 			prev_o = o;
-			o = ONEXT(o);
+//			o = ONEXT(o);
 		}
 	}
 
@@ -389,6 +484,7 @@ options_merge(Options o1, Options o2)
 {
 	/*Find merged capacitive loading and RAT of the combined solution
 		Note you can make use of the function option_mk here to allocate new solution*/
+clock_gettime(CLOCK_MONOTONIC, &start); // start time //
 	Time T;
 	Capacitance L;
 	/*
@@ -407,6 +503,10 @@ options_merge(Options o1, Options o2)
 
 	if(my_debug) fprintf(stderr, "options_merge output: (%2f, %2f)\n\n", T, L);
 
+	clock_gettime(CLOCK_MONOTONIC, &end); // end time //
+diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
+
+time_merge = time_merge + diff;
 	return option_mk(pair_mk(T, L));
 } 
 
@@ -428,9 +528,19 @@ options_combine(Options Z1, Options Z2)
 	Nat len=0;
   Nat len_z1 = options_len(Z1);
 	Nat len_z2 = options_len(Z2);
+//clock_gettime(CLOCK_MONOTONIC, &start); //start time //
 	Z1 = options_filter(Z1, len_z1);
-	Z2 = options_filter(Z2, len_z2);
+//clock_gettime(CLOCK_MONOTONIC, &end); // end time //
+//diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
+
+//time_diff = time_diff + diff;
 //	quickSort(Z1);
+//clock_gettime(CLOCK_MONOTONIC, &start); //start time //
+	Z2 = options_filter(Z2, len_z2);
+//clock_gettime(CLOCK_MONOTONIC, &end); // end time //
+//diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
+
+//time_diff = time_diff + diff;
 //	quickSort(Z2);
 	/* Combine every option element from Z1 with every option element from
 		 Z2. The merge operation is symmetric so this approach is sufficient
@@ -446,7 +556,10 @@ Nat iterator;
 Capacitance load = 1.797693e+308; //Setting Load to the highest possible value
 Time rat = -1.797693e+308;  //Setting RAT to the least possible value
 Options n;
+//iterate_merge ++;
+
 //printf("Entering merging\n");
+clock_gettime(CLOCK_MONOTONIC, &start); //start time //
 	for (o1=Z1; o1; o1 = ONEXT(o1)){
 		iterator = 0;
 		for (o2=Z2; o2; o2 = ONEXT(o2)) {
@@ -457,17 +570,17 @@ Options n;
 					rat = OTIME(o2);
 				}
 			}
-			if (iterator == len_z2) {
+		}
+//			if (iterator == len_z2) {
 				if (rat != -1.797693e+308) {
+					iterate_merge ++;
 					n = option_mk(pair_mk(rat, load));
 					*tail = options_merge(o1, n); 
 					tail=&ONEXT(*tail);
 					len ++;
 				}
-			}
-		}
+//			}
 	}
-
 
 load = 1.797693e+308; //Setting Load to the highest possible value
 rat = -1.797693e+308;  //Setting RAT to the least possible value
@@ -481,21 +594,35 @@ rat = -1.797693e+308;  //Setting RAT to the least possible value
 					rat = OTIME(o1);
 				}
 			}
-			if (iterator == len_z1) {
+		}
+//			if (iterator == len_z1) {
 				if (rat != -1.797693e+308) {
+					iterate_merge ++;
 					n = option_mk(pair_mk(rat, load));
 					*tail = options_merge(o2, n); 
 					tail=&ONEXT(*tail);
 						len ++;
 				}
-			}
-		}
+//			}
 	}
 
+/*  for (o1 = Z1; o1; o1 = ONEXT(o1))
+    for (o2 = Z2; o2; o2 = ONEXT(o2)) {
+        *tail = options_merge(o1, o2); 
+        tail=&ONEXT(*tail);
+        len++;
+    }
+*/
 
 	if (debug) options_show(stdout, Z, "test");
 //	len = options_len(tail);
+//clock_gettime(CLOCK_MONOTONIC, &start); // start time //
 	Z = options_filter(Z, len); 
+//clock_gettime(CLOCK_MONOTONIC, &end); // end time //
+//diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
+
+time_diff = time_diff + diff;
+
 
 	/* Delete original lists: */
 	options_free(Z1);
@@ -553,100 +680,6 @@ options_sort(Options list)
 }
 
 
-// Partitions the list taking the last element as the pivot
-Options partition(Options head, Options end,
-		Options *newHead, Options *newEnd)
-{
-	Options pivot = end;
-	Options prev = NULL, cur = head, tail = pivot;
-
-	// During partition, both the head and end of the list might change
-	// which is updated in the newHead and newEnd variables
-	while (cur != pivot)
-	{
-		if (OTIME(cur) < OTIME(pivot))
-		{
-			// First node that has a value less than the pivot - becomes
-			// the new head
-			if ((*newHead) == NULL)
-				(*newHead) = cur;
-
-			prev = cur;  
-			cur = ONEXT(cur);
-		}
-		else // If cur node is greater than pivot
-		{
-			// Move cur node to next of tail, and change tail
-			if (prev)
-				ONEXT(prev) = ONEXT(cur);
-			Options tmp = ONEXT(cur);
-			ONEXT(cur) = NULL;
-			ONEXT(tail) = cur;
-			tail = cur;
-			cur = tmp;
-		}
-	}
-
-	// If the pivot data is the smallest element in the current list,
-	// pivot becomes the head
-	if ((*newHead) == NULL)
-		(*newHead) = pivot;
-
-	// Update newEnd to the current last node
-	(*newEnd) = tail;
-
-	// Return the pivot node
-	return pivot;
-}
-
-
-//here the sorting happens exclusive of the end node
-Options quickSortRecur(Options head)
-{
-	Options end = options_last(head);
-	// base condition
-	if (!head || head == end)
-		return head;
-
-	Options newHead = NULL, newEnd = NULL;
-
-	// Partition the list, newHead and newEnd will be updated
-	// by the partition function
-	Options pivot = partition(head, end, &newHead, &newEnd);
-
-	// If pivot is the smallest element - no need to recur for
-	// the left part.
-	if (newHead != pivot)
-	{
-		// Set the node before the pivot node as NULL
-		Options tmp = newHead;
-		while (ONEXT(tmp) != pivot)
-			tmp = ONEXT(tmp);
-		ONEXT(tmp) = NULL;
-
-		// Recur for the list before pivot
-		newHead = quickSortRecur(newHead);
-
-		// Change next of last node of the left half to pivot
-		tmp = options_last(newHead);
-		ONEXT(tmp) =  pivot;
-	}
-
-	// Recur for the list after the pivot element
-	ONEXT(pivot) = quickSortRecur(ONEXT(pivot));
-
-	return newHead;
-}
-
-// The main function for quick sort. This is a wrapper over recursive
-// function quickSortRecur()
-void quickSort(Options list)
-{
-	list = quickSortRecur(list);
-	return;
-}
-
-
 
 	static Options
 bottom_up(Tree k, Bool no_buf)
@@ -661,7 +694,6 @@ bottom_up(Tree k, Bool no_buf)
 
 		Z  = options_combine(Z1, Z2);
 
-		/***************************/
 	}
 	Z = options_add_wire(Z, T_WIRE(k));
 	if (!no_buf)
@@ -676,7 +708,6 @@ main(int argc, char *argv[])
 {
 	Tree t;
 
-clock_gettime(CLOCK_MONOTONIC, &start); //start time //
 	if (argc > 1 && argv[1])
 		if (!freopen(argv[1], "r", stdin)) {
 			fprintf(stderr, "Cannot open file `%s' for reading.\n", argv[1]);
@@ -689,11 +720,14 @@ clock_gettime(CLOCK_MONOTONIC, &start); //start time //
 	fprintf(stdout, "\n");
 	pair_show(stdout, OPAIR(options_last(bottom_up(t, 0))));
 	fprintf(stdout, "\n");
-clock_gettime(CLOCK_MONOTONIC, &end); // end time //
-diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
 
-printf("elapsed process CPU time = %llu nanoseconds\n", (long long unsigned int) diff);
-printf("elapsed process CPU time = %llu milliseconds\n", (long long unsigned int) (diff/1000000)); 
+printf("Options filter = %llu nanoseconds\n", (long long unsigned int) time_diff);
+printf("Options filter = %llu milliseconds\n", (long long unsigned int) (time_diff/1000000)); 
+printf("Options merge = %llu nanoseconds\n", (long long unsigned int) time_merge);
+printf("Options merge = %llu milliseconds\n", (long long unsigned int) (time_merge/1000000)); 
+printf("Cumulative of merge and filter(Z) = %llu nanoseconds\n", (long long unsigned int) ((time_merge+time_diff))); 
+printf("Cumulative of merge and filter(Z) = %llu milliseconds\n", (long long unsigned int) ((time_merge+time_diff)/1000000)); 
+  printf("Iterate merge = %d\n", iterate_merge); 
 
 	return EXIT_SUCCESS;
 }

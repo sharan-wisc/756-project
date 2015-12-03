@@ -12,7 +12,11 @@
 #include <stdint.h>
 
 uint64_t diff; 
+static uint64_t time_diff = 0;
+static uint64_t time_merge = 0;
+static int iterate_merge; 
 struct timespec start, end;     //for calculating the time
+static int check = 0;
 #define BILLION 1000000000L
 
 /* ------------------------------------------------------------------------ */
@@ -77,6 +81,7 @@ struct Options_S {
 /* ADDED FOR ECE756 HWK */
 /* Boolean variable added to add a bunch of debug messages for merge/filter */
 static Bool my_debug = 0;
+static Bool my_flag = 0;
 /* END ADDED FOR ECE756 HWK */
 
 static Bool debug = 0;
@@ -145,6 +150,7 @@ options_copy(Options o)
   }
   return Z;
 }
+#endif
 
 static Nat
 options_len(Options o)
@@ -155,7 +161,6 @@ options_len(Options o)
     ;
   return len;
 }
-#endif
 
 static Options
 options_last(Options o)
@@ -386,6 +391,8 @@ options_merge(Options o1, Options o2)
 {
   /*Find merged capacitive loading and RAT of the combined solution
   Note you can make use of the function option_mk here to allocate new solution*/
+	check++;
+	clock_gettime(CLOCK_MONOTONIC, &start); //start time //
   Time T;
   Capacitance L;
   /*
@@ -394,16 +401,23 @@ options_merge(Options o1, Options o2)
   else
     T = OTIME(o2);
   */
-  if (my_debug) {
+/*  if (my_debug) {
     options_show(stderr, o1, "options_merge o1:");  
     options_show(stderr, o2, "options_merge o2:");  
   }
-  
+*/  
   T = min(OTIME(o1), OTIME(o2));
   L = OLOAD(o1) + OLOAD(o2);
 
-  if(my_debug) fprintf(stderr, "options_merge output: (%2f, %2f)\n\n", T, L);
+  if(my_flag){
+		fprintf(stderr, "options_merge output: (%2f, %2f)\n\n", T, L);
+		printf("Check value -> %d\n", check);
+	}
 
+clock_gettime(CLOCK_MONOTONIC, &end); // end time //
+diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
+
+time_merge = time_merge + diff;
   return option_mk(pair_mk(T, L));
 } 
 
@@ -420,6 +434,8 @@ static Options
 options_combine(Options Z1, Options Z2)
 {
   Options Z, o1, o2;
+	Nat len_z1 = options_len(Z1);
+	Nat len_z2 = options_len(Z2); 
   Options *tail;
   Nat len=0;
   /* Combine every option element from Z1 with every option element from
@@ -431,17 +447,26 @@ options_combine(Options Z1, Options Z2)
   */
 
   tail=&Z;
+//iterate_merge ++;
+
   for (o1 = Z1; o1; o1 = ONEXT(o1))
     for (o2 = Z2; o2; o2 = ONEXT(o2)) {
       /* Merge o1 and o2 */
+				iterate_merge ++;
         *tail = options_merge(o1, o2); 
         tail=&ONEXT(*tail);
         len++;
     }
+
   if (debug) options_show(stdout, Z, "test");
 
   /*   Z=*tail;*/
+clock_gettime(CLOCK_MONOTONIC, &start); //start time //
   Z = options_filter(Z, len); 
+clock_gettime(CLOCK_MONOTONIC, &end); // end time //
+diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
+
+time_diff = time_diff + diff;
 
   /* Delete original lists: */
   options_free(Z1);
@@ -489,7 +514,7 @@ main(int argc, char *argv[])
 {
   Tree t;
 
-clock_gettime(CLOCK_MONOTONIC, &start); //start time //
+//clock_gettime(CLOCK_MONOTONIC, &start); //start time //
   if (argc > 1 && argv[1])
     if (!freopen(argv[1], "r", stdin)) {
       fprintf(stderr, "Cannot open file `%s' for reading.\n", argv[1]);
@@ -503,10 +528,16 @@ clock_gettime(CLOCK_MONOTONIC, &start); //start time //
   pair_show(stdout, OPAIR(options_last(bottom_up(t, 0))));
   fprintf(stdout, "\n");
 
-clock_gettime(CLOCK_MONOTONIC, &end); // end time //
-diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
+//clock_gettime(CLOCK_MONOTONIC, &end); // end time //
+//diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
 
-printf("elapsed process CPU time = %llu nanoseconds\n", (long long unsigned int) diff);
-printf("elapsed process CPU time = %llu milliseconds\n", (long long unsigned int) (diff/1000000)); 
+printf("Options filter = %llu nanoseconds\n", (long long unsigned int) time_diff);
+printf("Options filter = %llu milliseconds\n", (long long unsigned int) (time_diff/1000000)); 
+printf("Options merge = %llu nanoseconds\n", (long long unsigned int) time_merge);
+printf("Options merge = %llu milliseconds\n", (long long unsigned int) (time_merge/1000000)); 
+printf("Cumulative of merge and filter(Z) = %llu nanoseconds\n", (long long unsigned int) ((time_merge+time_diff)));         
+printf("Cumulative of merge and filter(Z) = %llu milliseconds\n", (long long unsigned int) ((time_merge+time_diff)/1000000));
+
+  printf("Iterate merge = %d\n", iterate_merge); 
   return EXIT_SUCCESS;
 }
